@@ -8,13 +8,96 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
+
 import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import Store from 'electron-store';
 
+const store = new Store();
+// IPC listener
+ipcMain.on('electron-store-get', async (event, val) => {
+  event.returnValue = store.get(val);
+});
+ipcMain.on('electron-store-set', async (event, key, val) => {
+  store.set(key, val);
+});
+ipcMain.handle('scrape:get', async (event, val) => {
+  let exchange = val;
+  if (exchange === 'bybit') {
+    let value = import('../functions/exchange/bybit/scrapeByBit').then(
+      async (scrapeByBit) => {
+        // run
+        let result = await scrapeByBit.scrape();
+        return result;
+      }
+    );
+    return value
+  } else if (exchange === 'kucoin') {
+    let value = import('../functions/exchange/kucoin/scrape').then(
+      async (scrapeKucoin) => {
+        // run
+        let result = await scrapeKucoin.scrape();
+        return result;
+      }
+    );
+    return value
+  }
+});
+ipcMain.handle('exchange:getBalance', async (event, exchange, symbol) => {
+    if (exchange === 'kucoin'){
+        let value = import('../functions/exchange/kucoin/balance').then(
+            async (balance) => {
+                // run
+                let result = await balance.getBalance(symbol);
+                return result;
+            }
+        );
+        return value
+    } else if (exchange === 'bybit'){
+        let value = import('../functions/exchange/bybit/balance').then(
+            async (balance) => {
+                // run
+                let result = await balance.getBalance();
+                return result;
+            }
+        );
+        return value
+    }
+});
+ipcMain.handle('exchange:snipe', async (event, exchange, symbol, leverage, percentage, timestamp) => {
+  if (exchange === 'kucoin'){
+    console.log({exchange, symbol, leverage, percentage, timestamp});
+      let value = import('../functions/exchange/kucoin/trade').then(
+          async (trade) => {
+              // run
+              let result = await trade.snipe(symbol, leverage, percentage, timestamp);
+              return result;
+          }
+      );
+      return value
+  } else if (exchange === 'bybit'){
+      let value = import('../functions/exchange/bybit/trade').then(
+          async (trade) => {
+              // run
+              let result = await trade.snipe(symbol, leverage, percentage, timestamp);
+              return result;
+          }
+      );
+      return value
+  }
+})
+// ipcMain.handle('scrape:get', async (event, val) => {
+//   console.log(val)
+//   import('../functions/scrapeByBit').then(async (scrapeByBit) => {
+//     // run
+//     let result = await scrapeByBit.scrape();
+//     event.returnValue = result;
+//   });
+// });
 export default class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
