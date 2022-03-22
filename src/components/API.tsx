@@ -4,8 +4,8 @@ import { useState } from 'react';
 function API() {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
-  let apiValues = window.electron.store.get('api')
-  console.log(apiValues)
+  const apiValues = window.electron.store.get('api');
+  console.log(apiValues);
   const handleOk = () => {
     setVisible(false);
     const values = form.getFieldsValue();
@@ -19,10 +19,9 @@ function API() {
         key: values.bybit_key,
         secret: values.bybit_secret,
       },
-    }
+    };
     window.electron.store.set('api', obj);
     form.submit();
-
   };
   const handleCancel = () => {
     setVisible(false);
@@ -31,14 +30,13 @@ function API() {
     <>
       <Modal onOk={handleOk} onCancel={handleCancel} visible={visible}>
         <Form
-        initialValues={{
-          kucoin_key: apiValues?.kucoin?.key || '',
-          kucoin_secret: apiValues?.kucoin?.secret || '',
-          kucoin_passphrase: apiValues?.kucoin?.passphrase  || '',
-          bybit_key: apiValues?.bybit?.key || '',
-          bybit_secret: apiValues?.bybit?.secret || '',
-
-        }}
+          initialValues={{
+            kucoin_key: apiValues?.kucoin?.key || '',
+            kucoin_secret: apiValues?.kucoin?.secret || '',
+            kucoin_passphrase: apiValues?.kucoin?.passphrase || '',
+            bybit_key: apiValues?.bybit?.key || '',
+            bybit_secret: apiValues?.bybit?.secret || '',
+          }}
           onFinish={(values) => {
             console.log(values);
           }}

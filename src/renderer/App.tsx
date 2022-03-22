@@ -4,7 +4,7 @@ import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
 import React, { Suspense } from 'react';
 import Watchlist from 'components/Watchlist';
 import Balance from 'components/Balance';
-import API from 'components/API'
+import API from 'components/API';
 // dynmaic import component
 const Table = React.lazy(() => import('../components/TableData'));
 
@@ -41,9 +41,9 @@ declare global {
 const Hello = () => {
   return (
     <div>
-      <div className='header'>
+      <div className="header">
         <div>
-          <API></API>
+          <API />
         </div>
       </div>
       <div className="layout">

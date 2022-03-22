@@ -2,13 +2,13 @@
 const callKucoin = require('./callKucoin.ts');
 
 export async function getBalance(symbol: string) {
-  let result = await callKucoin(
+  const result = await callKucoin(
     'GET',
-    '/api/v1/account-overview?currency=' + symbol,
+    `/api/v1/account-overview?currency=${symbol}`,
     ''
   );
   return result.data.availableBalance;
 }
 module.exports = {
-  getBalance
+  getBalance,
 };

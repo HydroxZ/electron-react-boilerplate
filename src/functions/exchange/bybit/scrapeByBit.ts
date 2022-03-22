@@ -1,8 +1,9 @@
-const { LinearClient } = require('bybit-api');
 import Store from 'electron-store';
 
+const { LinearClient } = require('bybit-api');
+
 const store = new Store();
-const api:any = store.get('api');
+const api: any = store.get('api');
 const API_KEY = api.bybit.key;
 const PRIVATE_KEY = api.bybit.secret;
 const useLivenet = true;
@@ -20,11 +21,11 @@ const client = new LinearClient(
 
 //
 export async function scrape() {
-  let arrayFundingRates:any = [];
-  let data = await client.getTickers();
-  let symbols = await client.getSymbols();
-  data.result.forEach(async (item:any) => {
-    let {
+  const arrayFundingRates: any = [];
+  const data = await client.getTickers();
+  const symbols = await client.getSymbols();
+  data.result.forEach(async (item: any) => {
+    const {
       symbol,
       last_price,
       volume_24h,
@@ -34,8 +35,9 @@ export async function scrape() {
       mark_price,
     } = item;
     // find symbol inside symbols and get leverage
-    let max_leverage = symbols.result.find((x:any) => x.name === symbol)
-      .leverage_filter.max_leverage;
+    const { max_leverage } = symbols.result.find(
+      (x: any) => x.name === symbol
+    ).leverage_filter;
     arrayFundingRates.push({
       symbol,
       last_price,
@@ -49,11 +51,11 @@ export async function scrape() {
   });
 
   // order by highest funding rate
-  arrayFundingRates.sort((a:any, b:any) =>
+  arrayFundingRates.sort((a: any, b: any) =>
     Number(b.fundingRate - Number(a.fundingRate))
   );
   return arrayFundingRates;
-};
+}
 // wait
 // client.getLastFundingRate({ symbol: 'BTCUSDT' }).then(console.log)
 module.exports = {

@@ -3,6 +3,7 @@ import { tokenInfo } from './tokenInfo';
 
 // import callKucoin
 const callKucoin = require('./callKucoin.ts');
+
 const createUUID = (): string => {
   return (
     Math.random().toString(36).substring(2, 15) +
@@ -12,9 +13,8 @@ const createUUID = (): string => {
 const calculateSide = (fundingRate: number): string => {
   if (fundingRate > 0) {
     return 'sell';
-  } else {
-    return 'buy';
   }
+  return 'buy';
 };
 
 export async function buyOrder(
@@ -31,9 +31,9 @@ export async function buyOrder(
   console.timeEnd('Promise');
 
   // calculate size by taking percentage of wallet balance and multiplying by leverage and then dividing by price
-  let size = ((percentage / 100) * balance * leverage) / price.markPrice;
+  const size = ((percentage / 100) * balance * leverage) / price.markPrice;
   console.log(size);
-  let result = await callKucoin('POST', `/api/v1/orders`, {
+  const result = await callKucoin('POST', `/api/v1/orders`, {
     clientOid: createUUID(),
     size,
     leverage,
@@ -42,11 +42,11 @@ export async function buyOrder(
     side: calculateSide(price.fundingRate),
     symbol,
   });
-  console.log(result)
+  console.log(result);
   return result.data.orderId;
 }
 export async function sellOrder(orderId: string, symbol: string) {
-  let data = await callKucoin('POST', `/api/v1/orders`, {
+  const data = await callKucoin('POST', `/api/v1/orders`, {
     clientOid: orderId,
     symbol,
     closeOrder: true,
@@ -55,29 +55,35 @@ export async function sellOrder(orderId: string, symbol: string) {
   return data.data.orderId;
 }
 export async function waitForFunding(symbol: string, timestamp: number) {
-  let {data} = await callKucoin('GET', '/api/v1/funding-history?symbol=' + symbol, '')
-  let tempo = data.dataList[0].timePoint
+  const { data } = await callKucoin(
+    'GET',
+    `/api/v1/funding-history?symbol=${symbol}`,
+    ''
+  );
+  const tempo = data.dataList[0].timePoint;
   if (tempo > timestamp) {
     return true;
-  } else {
-    return false
   }
-
+  return false;
 }
-export async function snipe(symbol: string, leverage: number, percentage: number, timestamp:number) {
-  let orderId = await buyOrder(symbol, leverage, percentage);
+export async function snipe(
+  symbol: string,
+  leverage: number,
+  percentage: number,
+  timestamp: number
+) {
+  const orderId = await buyOrder(symbol, leverage, percentage);
   // set interval to check if order is funded
-  let interval = setInterval(async () => {
-    let funded = await waitForFunding(symbol, timestamp);
+  const interval = setInterval(async () => {
+    const funded = await waitForFunding(symbol, timestamp);
     console.log('checking funding history');
     if (funded) {
       console.log('order funded');
       clearInterval(interval);
-      let sell = await sellOrder(orderId, symbol);
+      const sell = await sellOrder(orderId, symbol);
       console.log(sell);
     }
-  }
-  , 800);
+  }, 800);
 }
 module.exports = {
   buyOrder,

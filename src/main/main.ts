@@ -13,9 +13,9 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import Store from 'electron-store';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import Store from 'electron-store';
 
 const store = new Store();
 // IPC listener
@@ -26,70 +26,86 @@ ipcMain.on('electron-store-set', async (event, key, val) => {
   store.set(key, val);
 });
 ipcMain.handle('scrape:get', async (event, val) => {
-  let exchange = val;
+  const exchange = val;
   if (exchange === 'bybit') {
-    let value = import('../functions/exchange/bybit/scrapeByBit').then(
+    const value = import('../functions/exchange/bybit/scrapeByBit').then(
       async (scrapeByBit) => {
         // run
-        let result = await scrapeByBit.scrape();
+        const result = await scrapeByBit.scrape();
         return result;
       }
     );
-    return value
-  } else if (exchange === 'kucoin') {
-    let value = import('../functions/exchange/kucoin/scrape').then(
+    return value;
+  }
+  if (exchange === 'kucoin') {
+    const value = import('../functions/exchange/kucoin/scrape').then(
       async (scrapeKucoin) => {
         // run
-        let result = await scrapeKucoin.scrape();
+        const result = await scrapeKucoin.scrape();
         return result;
       }
     );
-    return value
+    return value;
   }
 });
 ipcMain.handle('exchange:getBalance', async (event, exchange, symbol) => {
-    if (exchange === 'kucoin'){
-        let value = import('../functions/exchange/kucoin/balance').then(
-            async (balance) => {
-                // run
-                let result = await balance.getBalance(symbol);
-                return result;
-            }
-        );
-        return value
-    } else if (exchange === 'bybit'){
-        let value = import('../functions/exchange/bybit/balance').then(
-            async (balance) => {
-                // run
-                let result = await balance.getBalance();
-                return result;
-            }
-        );
-        return value
-    }
-});
-ipcMain.handle('exchange:snipe', async (event, exchange, symbol, leverage, percentage, timestamp) => {
-  if (exchange === 'kucoin'){
-    console.log({exchange, symbol, leverage, percentage, timestamp});
-      let value = import('../functions/exchange/kucoin/trade').then(
-          async (trade) => {
-              // run
-              let result = await trade.snipe(symbol, leverage, percentage, timestamp);
-              return result;
-          }
-      );
-      return value
-  } else if (exchange === 'bybit'){
-      let value = import('../functions/exchange/bybit/trade').then(
-          async (trade) => {
-              // run
-              let result = await trade.snipe(symbol, leverage, percentage, timestamp);
-              return result;
-          }
-      );
-      return value
+  if (exchange === 'kucoin') {
+    const value = import('../functions/exchange/kucoin/balance').then(
+      async (balance) => {
+        // run
+        const result = await balance.getBalance(symbol);
+        return result;
+      }
+    );
+    return value;
   }
-})
+  if (exchange === 'bybit') {
+    const value = import('../functions/exchange/bybit/balance').then(
+      async (balance) => {
+        // run
+        const result = await balance.getBalance();
+        return result;
+      }
+    );
+    return value;
+  }
+});
+ipcMain.handle(
+  'exchange:snipe',
+  async (event, exchange, symbol, leverage, percentage, timestamp) => {
+    if (exchange === 'kucoin') {
+      console.log({ exchange, symbol, leverage, percentage, timestamp });
+      const value = import('../functions/exchange/kucoin/trade').then(
+        async (trade) => {
+          // run
+          const result = await trade.snipe(
+            symbol,
+            leverage,
+            percentage,
+            timestamp
+          );
+          return result;
+        }
+      );
+      return value;
+    }
+    if (exchange === 'bybit') {
+      const value = import('../functions/exchange/bybit/trade').then(
+        async (trade) => {
+          // run
+          const result = await trade.snipe(
+            symbol,
+            leverage,
+            percentage,
+            timestamp
+          );
+          return result;
+        }
+      );
+      return value;
+    }
+  }
+);
 // ipcMain.handle('scrape:get', async (event, val) => {
 //   console.log(val)
 //   import('../functions/scrapeByBit').then(async (scrapeByBit) => {
@@ -158,7 +174,9 @@ const createWindow = async () => {
     height: 728,
     icon: getAssetPath('icon.png'),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: app.isPackaged
+        ? path.join(__dirname, 'preload.js')
+        : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
 

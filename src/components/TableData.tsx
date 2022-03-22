@@ -10,7 +10,7 @@ function TableData() {
         Content of Tab Pane 1
       </TabPane>
       <TabPane tab="Kucoin" key="2">
-      <Tabella exchange="kucoin" />
+        <Tabella exchange="kucoin" />
       </TabPane>
       <TabPane tab="Bybit" key="3">
         <Tabella exchange="bybit" />

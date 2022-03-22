@@ -1,11 +1,12 @@
-const { LinearClient } = require('bybit-api');
 import Store from 'electron-store';
+
+const { LinearClient } = require('bybit-api');
 
 //
 export async function getBalance() {
   const store = new Store();
 
-  const api: any = store.get('api')
+  const api: any = store.get('api');
   const API_KEY = api.bybit.key;
   const PRIVATE_KEY = api.bybit.secret;
   const useLivenet = true;
@@ -21,8 +22,8 @@ export async function getBalance() {
     // requestLibraryOptions
   );
 
-  let data = await client.getWalletBalance();
-  let result = data.result.USDT.available_balance;
+  const data = await client.getWalletBalance();
+  const result = data.result.USDT.available_balance;
   return result;
 }
 getBalance();

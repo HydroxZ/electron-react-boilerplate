@@ -1,6 +1,5 @@
-import { Button } from 'antd';
+import { Button, Table } from 'antd';
 import useStore from '../renderer/store';
-import { Table } from 'antd';
 
 const columns = [
   {
@@ -37,23 +36,23 @@ const columns = [
     title: 'Return',
     dataIndex: 'return',
     render: (text: any, record: any) => {
-      const leverage = record.leverage;
-      let funding_rate = record.funding_rate;
+      const { leverage } = record;
+      let { funding_rate } = record;
       const percentage = record.size;
-      const exchange = record.exchange;
+      const { exchange } = record;
       // convert funding_rate to positive
       if (funding_rate < 0) {
-        funding_rate = funding_rate * -1;
+        funding_rate *= -1;
       }
-      //@ts-ignore
+      // @ts-ignore
       const balance: number = useStore.getState()[`${exchange}Balance`];
-      let position = balance * (percentage / 100) * leverage;
+      const position = balance * (percentage / 100) * leverage;
       const funding_fee = (position * funding_rate) / 100;
       // calculate 0.14% of fees
-      console.log(position)
-      const fees = position  * 0.014 / 10;
-      console.log(fees)
-      console.log(funding_fee)
+      console.log(position);
+      const fees = (position * 0.014) / 10;
+      console.log(fees);
+      console.log(funding_fee);
       const total = funding_fee - fees;
       return <div>{total.toFixed(2)}$</div>;
     },
@@ -65,7 +64,7 @@ const columns = [
       return (
         <Button
           onClick={() => {
-            let watchlist = useStore.getState().watchlist;
+            const { watchlist } = useStore.getState();
             clearTimeout(record.timeout);
             useStore.setState({
               watchlist: watchlist.filter((item: any) => item.id !== record.id),
@@ -79,7 +78,7 @@ const columns = [
   },
 ];
 function Watchlist() {
-  let watchlist = useStore((state: any) => state.watchlist);
+  const watchlist = useStore((state: any) => state.watchlist);
   console.log(watchlist);
 
   return (

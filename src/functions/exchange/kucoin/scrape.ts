@@ -2,10 +2,10 @@
 const callKucoin = require('./callKucoin.ts');
 
 export async function scrape() {
-  let result = await callKucoin('GET', '/api/v1/contracts/active', '');
-  let arr = [];
-  for (let i of result.data) {
-    let {
+  const result = await callKucoin('GET', '/api/v1/contracts/active', '');
+  const arr = [];
+  for (const i of result.data) {
+    const {
       maxLeverage: max_leverage,
       symbol,
       fundingFeeRate: funding_rate,
@@ -14,8 +14,8 @@ export async function scrape() {
       markPrice: mark_price,
     } = i;
     // time in ms to date
-    let timestamp_to_date = new Date().getTime() + next_funding_time;
-    let date2 = new Date(timestamp_to_date)
+    const timestamp_to_date = new Date().getTime() + next_funding_time;
+    const date2 = new Date(timestamp_to_date);
     // let date = new Date(timestamp_to_date).toLocaleString('it-IT').replace(',', '');
 
     arr.push({

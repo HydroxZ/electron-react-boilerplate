@@ -1,4 +1,4 @@
-import  Store from 'electron-store';
+import Store from 'electron-store';
 // const config = {
 //   apiKey: '6234cdd4720edf000108518f',
 //   secretKey: 'fbb712a9-a244-41c9-abb7-f69de4f5ab6e',
@@ -12,11 +12,11 @@ async function Caller(
   body: string
 ) {
   // const { v4: uuidv4 } = require('uuid');
-  const createHmac = require('crypto').createHmac;
+  const { createHmac } = require('crypto');
   const axios = require('axios').default;
   // call electron store
   const store = new Store();
-  const api:any = store.get('api');
+  const api: any = store.get('api');
   const baseUrl = 'https://api-futures.kucoin.com';
   // const config = {
   //   apiKey: '6233811134de1d0001e64b31',
@@ -44,7 +44,7 @@ async function Caller(
       }`
     )
     .digest('base64');
-  let headers = {
+  const headers = {
     'KC-API-KEY': config.apiKey,
     'KC-API-PASSPHRASE': KC_API_PASSPHRASE,
     'KC-API-SIGN': KC_API_SIGN,
@@ -52,13 +52,14 @@ async function Caller(
     'KC-API-KEY-VERSION': '2',
   };
   if (metodo === 'GET') {
-    let data = await axios.get(`${baseUrl}${ENDPOINT}`, {
+    const data = await axios.get(`${baseUrl}${ENDPOINT}`, {
       headers,
     });
-    let info = data.data;
+    const info = data.data;
     return info;
-  } else if (metodo === 'POST') {
-    let data = await axios.post(
+  }
+  if (metodo === 'POST') {
+    const data = await axios.post(
       `${baseUrl}${ENDPOINT}`,
       // @ts-expect-error
       { ...BODY },
@@ -66,7 +67,7 @@ async function Caller(
         headers,
       }
     );
-    let info = data.data;
+    const info = data.data;
     return info;
   }
 }

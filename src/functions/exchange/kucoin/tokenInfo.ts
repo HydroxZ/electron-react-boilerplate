@@ -2,13 +2,13 @@
 const callKucoin = require('./callKucoin.ts');
 
 export async function tokenInfo(symbol: string) {
-  let result = await callKucoin('GET', '/api/v1/contracts/' + symbol, '');
-  let obj = {
+  const result = await callKucoin('GET', `/api/v1/contracts/${symbol}`, '');
+  const obj = {
     markPrice: result.data.markPrice,
     fundingRate: result.data.fundingFeeRate * 100,
   };
 
-  return obj
+  return obj;
 }
 
 module.exports = {

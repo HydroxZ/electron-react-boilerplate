@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 import useStore from '../renderer/store';
 
 function Balance() {
-  let kucoinBalance = useStore().kucoinBalance;
-  let bybitBalance = useStore().bybitBalance;
+  const { kucoinBalance } = useStore();
+  const { bybitBalance } = useStore();
   useEffect(() => {
     // let state
-    let apikeys = window.electron.store.get('api');
+    const apikeys = window.electron.store.get('api');
     if (apikeys?.kucoin?.key && apikeys?.kucoin?.secret) {
       window.electron.exchange
         .getBalance('kucoin', 'USDT')

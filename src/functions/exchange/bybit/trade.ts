@@ -1,5 +1,6 @@
-const { LinearClient } = require('bybit-api');
 import Store from 'electron-store';
+
+const { LinearClient } = require('bybit-api');
 
 //
 export async function snipe(
@@ -25,21 +26,21 @@ export async function snipe(
     // requestLibraryOptions
   );
 
-  let [token, walletBallance] = await Promise.all([
+  const [token, walletBallance] = await Promise.all([
     client.getTickers({ symbol }),
     client.getWalletBalance(),
   ]);
-  let balance = walletBallance.result.USDT.available_balance;
-  let price = token.result[0].mark_price;
-  let size = ((percentage / 100) * balance * leverage) / price;
-  let fundingRate = token.result[0].funding_rate;
+  const balance = walletBallance.result.USDT.available_balance;
+  const price = token.result[0].mark_price;
+  const size = ((percentage / 100) * balance * leverage) / price;
+  const fundingRate = token.result[0].funding_rate;
   let side: string;
   if (fundingRate > 0) {
     side = 'Sell';
   } else {
     side = 'Buy';
   }
-  let data = await client.placeActiveOrder({
+  const data = await client.placeActiveOrder({
     close_on_trigger: false,
     leverage,
     order_type: 'Market',
@@ -49,19 +50,19 @@ export async function snipe(
     reduce_only: false,
     time_in_force: 'ImmediateOrCancel',
   });
-  console.log(data)
-  let orderId = data.result.order_id;
+  console.log(data);
+  const orderId = data.result.order_id;
   if (side === 'Buy') {
     side = 'Sell';
   } else {
     side = 'Buy';
   }
 
-  let interval = setInterval(async () => {
-    let funded = await waitForFunding(symbol, timestamp);
+  const interval = setInterval(async () => {
+    const funded = await waitForFunding(symbol, timestamp);
     console.log(funded);
     if (funded) {
-      let sell = await client.placeActiveOrder({
+      const sell = await client.placeActiveOrder({
         reduce_only: true,
         order_link_id: orderId,
         close_on_trigger: true,
@@ -104,14 +105,14 @@ const waitForFunding = async (symbol: string, timestamp: number) => {
     // requestLibraryOptions
   );
 
-  let fundingRes = await client.getLastFundingFee({ symbol });
-  let zulutime = fundingRes?.result?.exec_time;
+  const fundingRes = await client.getLastFundingFee({ symbol });
+  const zulutime = fundingRes?.result?.exec_time;
   if (zulutime) {
-    let timestamp_fee = new Date(zulutime).getTime();
+    const timestamp_fee = new Date(zulutime).getTime();
     if (timestamp_fee > timestamp) {
       return true;
-    } else {
-      return false;
     }
-  } else return false;
+    return false;
+  }
+  return false;
 };
