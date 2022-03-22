@@ -10,12 +10,18 @@ function Balance() {
     if (apikeys?.kucoin?.key && apikeys?.kucoin?.secret) {
       window.electron.exchange
         .getBalance('kucoin', 'USDT')
-        .then((res) => useStore.setState({ kucoinBalance: res }));
+        .then((res) => useStore.setState({ kucoinBalance: res }))
+        .catch((err) => {
+          throw err;
+        });
     }
     if (apikeys?.bybit?.key && apikeys?.bybit?.secret) {
       window.electron.exchange
         .getBalance('bybit', 'USDT')
-        .then((res) => useStore.setState({ bybitBalance: res }));
+        .then((res) => useStore.setState({ bybitBalance: res }))
+        .catch((err) => {
+          throw err;
+        });
     }
   }, []);
 

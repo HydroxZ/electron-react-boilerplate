@@ -22,10 +22,10 @@ const store = new Store();
 ipcMain.on('electron-store-get', async (event, val) => {
   event.returnValue = store.get(val);
 });
-ipcMain.on('electron-store-set', async (event, key, val) => {
+ipcMain.on('electron-store-set', async (_event, key, val) => {
   store.set(key, val);
 });
-ipcMain.handle('scrape:get', async (event, val) => {
+ipcMain.handle('scrape:get', async (_event, val) => {
   const exchange = val;
   if (exchange === 'bybit') {
     const value = import('../functions/exchange/bybit/scrapeByBit').then(
@@ -48,7 +48,7 @@ ipcMain.handle('scrape:get', async (event, val) => {
     return value;
   }
 });
-ipcMain.handle('exchange:getBalance', async (event, exchange, symbol) => {
+ipcMain.handle('exchange:getBalance', async (_event, exchange, symbol) => {
   if (exchange === 'kucoin') {
     const value = import('../functions/exchange/kucoin/balance').then(
       async (balance) => {
@@ -72,7 +72,7 @@ ipcMain.handle('exchange:getBalance', async (event, exchange, symbol) => {
 });
 ipcMain.handle(
   'exchange:snipe',
-  async (event, exchange, symbol, leverage, percentage, timestamp) => {
+  async (_event, exchange, symbol, leverage, percentage, timestamp) => {
     if (exchange === 'kucoin') {
       console.log({ exchange, symbol, leverage, percentage, timestamp });
       const value = import('../functions/exchange/kucoin/trade').then(

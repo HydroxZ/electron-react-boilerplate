@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Form, Input, InputNumber, Table, Modal } from 'antd';
+import { Button, Form, InputNumber, Table, Modal } from 'antd';
 import useStore from '../renderer/store';
 
 type Props = {
@@ -122,7 +122,6 @@ function Tabella(props: Props) {
                   onOk: async () => {
                     const a = await form.validateFields();
                     // add to watchlist store
-                    console.log(a);
                     const { watchlist } = useStore.getState();
 
                     const createUUID = (): string => {
@@ -141,10 +140,10 @@ function Tabella(props: Props) {
                         content: 'Symbol already in watchlist',
                       });
                     } else {
-                      let seconds = new Date(
+                      let seconds: number | string = new Date(
                         record.next_funding_time
                       ).getSeconds();
-                      let minutes = new Date(
+                      let minutes: number | string = new Date(
                         record.next_funding_time
                       ).getMinutes();
                       const hours =
@@ -156,10 +155,7 @@ function Tabella(props: Props) {
                       const year = new Date(
                         record.next_funding_time
                       ).getFullYear();
-                      // set seconds to 00
-                      // @ts-ignore
                       seconds = '57';
-                      // @ts-ignore
                       minutes = '59';
                       // create new date with new time
                       const timestamp = new Date(
@@ -167,21 +163,21 @@ function Tabella(props: Props) {
                         month,
                         day,
                         hours,
-                        minutes,
-                        seconds
+                        Number(minutes),
+                        Number(seconds)
                       ).getTime();
 
                       // get missing time in milliseconds
                       const timeDiff = timestamp - new Date().getTime();
                       console.log(timeDiff);
                       const timeout = setTimeout(
-                        (exchange, symbol, leverage, size, timestamp) => {
+                        (exchange, symbol, leverage, size, timestamp_date) => {
                           window.electron.exchange.snipe(
                             exchange,
                             symbol,
                             leverage,
                             size,
-                            timestamp
+                            timestamp_date
                           );
                         },
                         timeDiff,

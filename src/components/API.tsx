@@ -5,7 +5,6 @@ function API() {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
   const apiValues = window.electron.store.get('api');
-  console.log(apiValues);
   const handleOk = () => {
     setVisible(false);
     const values = form.getFieldsValue();
@@ -36,9 +35,6 @@ function API() {
             kucoin_passphrase: apiValues?.kucoin?.passphrase || '',
             bybit_key: apiValues?.bybit?.key || '',
             bybit_secret: apiValues?.bybit?.secret || '',
-          }}
-          onFinish={(values) => {
-            console.log(values);
           }}
           form={form}
         >

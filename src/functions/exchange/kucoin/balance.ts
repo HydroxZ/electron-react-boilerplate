@@ -1,5 +1,5 @@
 // import callKucoin
-const callKucoin = require('./callKucoin.ts');
+const callKucoin = require('./callKucoin');
 
 export async function getBalance(symbol: string) {
   const result = await callKucoin(
